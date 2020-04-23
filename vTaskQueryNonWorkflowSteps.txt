@@ -1,0 +1,90 @@
+vTaskNonWorkflowSteps:=
+SELECT
+	 Task.src_task_id AS `Source Task Key`
+	,SrcSystems.src_system_nm AS `Source System`
+	,IncomeTeam.division_group_nm AS `Division Group`
+	,IncomeTeam.division_nm AS Division
+	,IncomeTeam.organisation_nm AS Organisation
+	,IncomeTeam.accounting_entity_nm AS `Accounting Entity`
+	,IncomeTeam.office_nm AS Office
+	,IncomeTeam.income_team_nm AS `Income Team`
+	,IncomeTeam.income_team_supervisor_nm AS `Income Team Supervisor`
+	,Task.task_exec_office AS `Task Executive Office`
+	,Task.task_organisation_nm AS `Task Organisation`
+	,Task.task_status_desc AS Status
+	,Task.client_key AS `Client Key`
+	,IF(Task.task_context_type = 'Agent', Task.task_context_key, NULL) AS `Agent Key`
+	,IF(Task.task_context_type = 'Claim', Task.task_context_key, NULL) AS `Claim Key`
+	,IF(Task.task_context_type = 'Complaint', Task.task_context_key, NULL) AS `Complaint Key`
+	,IF(Task.task_context_type = 'Fee', Task.task_context_key, NULL) AS `Fee Key`
+	,IF(Task.task_context_type = 'Invoice No.', Task.task_context_key, NULL) AS `Invoice Key`
+	,IF(Task.task_context_type = 'Policy', Task.task_context_key, NULL) AS `Policy Key`
+	,IF(Task.task_context_type = 'Quote', Task.task_context_key, NULL) AS `Quote Key`
+	,IF(Task.task_context_type = 'RFQ', Task.task_context_key, NULL) AS `RFQ Key`
+	,Task.activity_type_desc AS `Activity Type`
+	,Task.rejection_reason_desc AS `Rejection Reason`
+	,Task.rejection_reason_details AS `Rejection Reason Details`
+	,Task.completion_outcome_desc AS `Completion Outcome`
+	,Task.completion_reason_details AS `Completion Reason`
+	,Task.email_to_be_sent AS `Email To Be Sent`
+	,Task.sent_as_email AS `Sent As Email`
+	,Task.view_on_web AS `View On Web`
+	,Task.task_title AS Title
+	,Task.task_desc AS Description
+	,UsersCreatedBy.user_nm AS `Created By User`
+	,UsersAssignedTo.user_nm AS `Assigned To User`
+	,UsersPreviouslyAssignedTo.user_nm AS `Previously Assigned User`
+	,UsersCompletedBy.user_nm AS `Completed By User`
+	,UsersDeletedBy.user_nm AS `Deleted By User`
+	,UsersLastUpdatedBy.user_nm AS `Last Updated By`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.task_created_date_key, 'yyyyMMdd')) AS `Created Date`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.task_start_date_key, 'yyyyMMdd')) AS `Start Date`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.task_due_date_key, 'yyyyMMdd')) AS `Due Date`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.assignment_start_date_key, 'yyyyMMdd')) AS `AssignmentStart Date`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.assignment_end_date_key, 'yyyyMMdd')) AS `Assignment End Date`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.task_completed_date_key, 'yyyyMMdd')) AS `Completed Date`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.task_deleted_date_key, 'yyyyMMdd')) AS `Deleted Date`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.task_hide_until_date_key, 'yyyyMMdd')) AS `Hide Until Date`
+	,FROM_UNIXTIME(UNIX_TIMESTAMP(Task.task_reminder_date_key, 'yyyyMMdd')) AS `Reminder Date`
+	,'' AS `Workflow Key`
+	,'' AS `Step Key`
+	,'' AS `Process Type`
+	,'' AS Workflow
+	,'' AS Step
+	,'' AS `Workflow Status`
+	,'' AS `Step Status`
+    
+FROM
+	Task
+	
+	LEFT OUTER JOIN SrcSystems
+		ON	Task.src_system_key = SrcSystems.src_system_key
+
+	LEFT OUTER JOIN IncomeTeam
+		ON	Task.task_team_key = IncomeTeam.income_team_key
+
+	LEFT OUTER JOIN Users AS UsersCreatedBy
+		ON	Task.created_by_user_key = UsersCreatedBy.user_key
+
+	LEFT OUTER JOIN Users AS UsersAssignedTo
+		ON	Task.assigned_to_user_key = UsersAssignedTo.user_key
+
+	LEFT OUTER JOIN Users AS UsersPreviouslyAssignedTo
+		ON	Task.previously_assigned_user_key = UsersPreviouslyAssignedTo.user_key
+
+	LEFT OUTER JOIN Users AS UsersCompletedBy
+		ON	Task.completed_by_user_key = UsersCompletedBy.user_key
+
+	LEFT OUTER JOIN Users AS UsersDeletedBy
+		ON	Task.deleted_by_user_key = UsersDeletedBy.user_key
+
+	LEFT OUTER JOIN Users AS UsersLastUpdatedBy
+		ON	Task.last_updated_by_user_key = UsersLastUpdatedBy.user_key
+
+WHERE
+		Task.task_created_date_key <= ADD_MONTHS(CURRENT_DATE(), -36)
+	OR	Task.task_due_date_key >= CURRENT_DATE()
+	OR	Task.task_status_desc NOT IN	(
+							 'Completed'
+							,'Rejected'
+						)::

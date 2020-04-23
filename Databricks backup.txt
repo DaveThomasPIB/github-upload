@@ -1,0 +1,20 @@
+%scala
+
+println("---Creating list structure for list of table configuration---")
+val source_table_details  = List(
+("Task",s"$adlsRootPath/integrated/F_TASK_T/sourcekey=18/",18,"|","orc"),
+("SrcSystems",s"$adlsRootPath/integrated/D_SRC_SYSTEMS_T/",18,"|","orc"),
+("IncomeTeam",s"$adlsRootPath/integrated/D_INCOME_TEAM_T/sourcekey=18/",18,"|","orc"),
+("Users",s"$adlsRootPath/integrated/D_USERS_T/sourcekey=18/",18,"|","orc"),
+("WorkflowSteps",s"$adlsRootPath/integrated/D_WORKFLOW_STEPS_T/sourcekey=18/",18,"|","orc")
+)
+
+process_source_table_implementation(source_table_details)
+
+/*Read Integration queries from Configuration file */
+val TaskQueryList:Map[String,String] = readsourcequery(s"$adlsRootPath/config/SAS_Cubes/vTaskQuery",spark)
+
+/*Integrate and transform from different Sources*/ 
+val TaskQueryDataset = sql(TaskQueryList("vTask"))
+
+scdType1Implementation_nonacturis(TaskQueryDataset,"","vTask",s"$adlsRootPath/integrated/SAS_Cube/vTask/",spark,1,"orc","18") 

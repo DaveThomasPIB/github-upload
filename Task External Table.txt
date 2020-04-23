@@ -1,0 +1,66 @@
+%jdbc(hive)
+DROP TABLE IF EXISTS C_TASK_T;
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS C_TASK_T
+(
+	 `Source Task Key`				INT
+	,`Source System`				VARCHAR(50)
+	,`Division Group`				VARCHAR(50)
+	,Division						VARCHAR(50)
+	,Organisation					VARCHAR(50)
+	,`Accounting Entity`			VARCHAR(50)
+	,Office							VARCHAR(50)
+	,`Income Team`					VARCHAR(50)
+	,`Income Team Supervisor`		VARCHAR(50)
+	,`Task Executive Office`		VARCHAR(50)
+	,`Task Organisation`			VARCHAR(50)
+	,Status							VARCHAR(20)
+	,`Client Key`					INT
+	,`Agent Key`					INT
+	,`Claim Key`					INT
+	,`Complaint Key`				INT
+	,`Fee Key`						INT
+	,`Invoice Key`					INT
+	,`Policy Key`					INT
+	,`Quote Key`					INT
+	,`RFQ Key`						INT
+	,`Activity Type`				VARCHAR(50)
+	,`Rejection Reason`				VARCHAR(50)
+	,`Rejection Reason Details`		VARCHAR(50)
+	,`Completion Outcome`			VARCHAR(50)
+	,`Completion Reason`			VARCHAR(50)
+	,`Email To Be Sent`				VARCHAR(50)
+	,`Sent As Email`				VARCHAR(50)
+	,`View On Web`					VARCHAR(50)
+	,Title							VARCHAR(200)
+	,Description					VARCHAR(200)
+	,`Created By User `				VARCHAR(50)
+	,`Assigned To User`				VARCHAR(50)
+	,`Previously Assigned User`		VARCHAR(50)
+	,`Completed By User`			VARCHAR(50)
+	,`Deleted By User`				VARCHAR(50)
+	,`Last Updated By`				VARCHAR(50)
+	,`Created Date`					TIMESTAMP
+	,`Start Date`					TIMESTAMP
+	,`Due Date`						TIMESTAMP
+	,`AssignmentStart Date`			TIMESTAMP
+	,`Assignment End Date`			TIMESTAMP
+	,`Completed Date`				TIMESTAMP
+	,`Deleted Date`					TIMESTAMP
+	,`Hide Until Date`				TIMESTAMP
+	,`Reminder Date`				TIMESTAMP
+	,`Workflow Key`					INT
+	,`Step Key`						INT
+	,`Process Type`					VARCHAR(50)
+	,Workflow						VARCHAR(200)
+	,Step							VARCHAR(200)
+	,`Workflow Status`				VARCHAR(50)
+	,`Step Status`					VARCHAR(50)
+)
+STORED AS ORC 
+LOCATION "abfss://adls@sapduksbiliveadls.dfs.core.windows.net/integrated/SAS_Cube/vTask"
+tblproperties ("orc.compress"="SNAPPY")
+;
+
+msck repair table C_TASK_T;
